@@ -10,10 +10,11 @@ Hacé doble clic en `iniciar.bat`. No requiere instalación ni conexión a inter
 
 1. Escribí la nota.
 2. Cambiá el código, la descripción, la cantidad y el valor unitario del producto.
-3. Pulsá **Imprimir**.
-4. En la ventana de impresión seleccioná la impresora térmica, papel de **80 mm**, escala **100 %**, márgenes **ninguno** y desactivá encabezados y pies de página del navegador.
+3. Usá **Agregar producto** para incluir más filas y **Eliminar** para retirar una.
+4. Pulsá **Imprimir**.
+5. En la ventana de impresión seleccioná la impresora térmica, papel de **80 mm**, escala **100 %**, márgenes **ninguno** y desactivá encabezados y pies de página del navegador.
 
-La fecha y la hora se toman automáticamente del computador. El total, el efectivo y el cambio se calculan automáticamente. Los últimos datos escritos quedan guardados en ese navegador.
+La fecha y la hora se toman automáticamente del computador. El total de todos los productos, el efectivo y el cambio se calculan automáticamente. Los últimos datos escritos quedan guardados en ese navegador.
 
 ## Ajustar para otra impresora
 

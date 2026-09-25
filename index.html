@@ -17,6 +17,14 @@
           <textarea id="note" name="note" rows="3" maxlength="110"></textarea>
         </div>
 
+        <div class="field">
+          <label for="cashier">Cajero</label>
+          <select id="cashier" name="cashier">
+            <option value="Yeison Jimenez">Yeison Jimenez</option>
+            <option value="Julian Andres">Julian Andres</option>
+          </select>
+        </div>
+
         <div id="products-list" class="products-list"></div>
         <button id="add-product" class="button-secondary" type="button">Agregar producto</button>
 
@@ -67,7 +75,7 @@
 
         <footer class="receipt__footer">
           <p>Documento Impreso por Delta<br />Ingeniería EDS Sas 901.556.389-7</p>
-          <p>Atendido por: Yelson Jimenez</p>
+          <p>Atendido por: <span id="receipt-cashier"></span></p>
           <p id="footer-datetime"></p>
           <p>*** GRACIAS POR SU COMPRA ***</p>
         </footer>

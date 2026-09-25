@@ -1,5 +1,6 @@
 const EXAMPLE = {
   note: "SOPA, PAPA, CERDO, LLEVAR",
+  cashier: "Yeison Jimenez",
   products: [
     {
       code: "79",
@@ -12,6 +13,7 @@ const EXAMPLE = {
 
 const form = document.querySelector("#receipt-form");
 const noteField = document.querySelector("#note");
+const cashierField = document.querySelector("#cashier");
 const productsList = document.querySelector("#products-list");
 const productTemplate = document.querySelector("#product-template");
 
@@ -24,6 +26,7 @@ const output = {
   date: document.querySelector("#receipt-date"),
   time: document.querySelector("#receipt-time"),
   footerDatetime: document.querySelector("#footer-datetime"),
+  cashier: document.querySelector("#receipt-cashier"),
   message: document.querySelector("#form-message"),
 };
 
@@ -122,6 +125,7 @@ function render() {
   const cash = nextCashAmount(data.total);
 
   output.note.textContent = data.note || "—";
+  output.cashier.textContent = cashierField.value;
   output.products.replaceChildren(...data.products.map(createReceiptProduct));
   output.total.textContent = money.format(data.total);
   output.cash.textContent = money.format(cash);
@@ -130,6 +134,7 @@ function render() {
 
   localStorage.setItem("grano-plancha-receipt", JSON.stringify({
     note: noteField.value,
+    cashier: cashierField.value,
     products: readProducts(false).map(({ code, description, quantity, unitPrice }) => ({
       code,
       description,
@@ -185,6 +190,7 @@ function migrateSavedProducts(values) {
 
 function loadValues(values) {
   noteField.value = values?.note ?? EXAMPLE.note;
+  cashierField.value = values?.cashier === "Julian Andres" ? "Julian Andres" : EXAMPLE.cashier;
   productsList.replaceChildren();
   migrateSavedProducts(values).forEach(addProduct);
   render();

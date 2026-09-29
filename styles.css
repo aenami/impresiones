@@ -171,6 +171,47 @@ button:focus-visible { outline: 2px solid #202124; outline-offset: 2px; }
 
 .receipt { display: none; }
 
+.blackout-toggle {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  min-height: 34px;
+  padding: 0 11px;
+  border: 1px solid #c8c9cc;
+  border-radius: 5px;
+  background: #fff;
+  color: #5f6368;
+  cursor: pointer;
+  font-size: 12px;
+  z-index: 10;
+}
+
+.blackout-toggle:hover { background: #ededed; }
+
+@media screen {
+  body.blackout {
+    overflow: hidden;
+    background: #000;
+  }
+
+  body.blackout main { visibility: hidden; }
+
+  body.blackout .blackout-toggle {
+    right: auto;
+    bottom: 0;
+    left: 0;
+    width: 72px;
+    height: 72px;
+    padding: 0;
+    border-color: transparent;
+    outline: 0;
+    background: transparent;
+    color: transparent;
+    cursor: default;
+    opacity: 0;
+  }
+}
+
 @media (max-width: 480px) {
   main { margin: 16px auto; }
   form { padding: 18px; }
@@ -192,7 +233,8 @@ button:focus-visible { outline: 2px solid #202124; outline-offset: 2px; }
   }
 
   form,
-  .sr-only { display: none !important; }
+  .sr-only,
+  .blackout-toggle { display: none !important; }
 
   .receipt {
     display: block;

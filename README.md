@@ -20,6 +20,8 @@ La factura incluye el total y la forma de pago. La comanda cambia la franja de p
 
 La fecha y la hora se toman automáticamente del computador. El total de todos los productos, el efectivo y el cambio se calculan automáticamente. Los últimos datos escritos quedan guardados en ese navegador.
 
+El botón **Pantalla negra** oculta el formulario y deja toda la ventana en negro. Para restaurarla, hacé clic nuevamente en la esquina inferior izquierda.
+
 ## Ajustar para otra impresora
 
 El ancho del recibo se define en `styles.css` con `width: 80mm`. Cuando se conozca la marca, el modelo y el ancho de papel se puede ajustar esa medida y comprobar el corte real.

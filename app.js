@@ -18,6 +18,7 @@ const noteField = document.querySelector("#note");
 const cashierField = document.querySelector("#cashier");
 const productsList = document.querySelector("#products-list");
 const productTemplate = document.querySelector("#product-template");
+const blackoutToggle = document.querySelector("#blackout-toggle");
 
 const output = {
   receipt: document.querySelector("#receipt"),
@@ -228,6 +229,15 @@ productsList.addEventListener("click", (event) => {
   removeButton.closest(".product-item").remove();
   renumberProducts();
   render();
+});
+
+blackoutToggle.addEventListener("click", () => {
+  const isBlackout = document.body.classList.toggle("blackout");
+  blackoutToggle.setAttribute("aria-pressed", String(isBlackout));
+  blackoutToggle.setAttribute(
+    "aria-label",
+    isBlackout ? "Restaurar página" : "Activar pantalla negra",
+  );
 });
 
 document.querySelector("#print-button").addEventListener("click", () => {

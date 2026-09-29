@@ -13,6 +13,14 @@
 
       <form id="receipt-form" novalidate>
         <div class="field">
+          <label for="print-type">Formato</label>
+          <select id="print-type" name="printType">
+            <option value="invoice">Factura</option>
+            <option value="command">Comanda</option>
+          </select>
+        </div>
+
+        <div class="field">
           <label for="note">Nota</label>
           <textarea id="note" name="note" rows="3" maxlength="110"></textarea>
         </div>
@@ -34,7 +42,7 @@
 
       <article id="receipt" class="receipt" aria-label="Recibo">
         <header class="receipt__business">
-          <h2>*** GRANO Y PLANCHA ***</h2>
+          <h2>***GRANO Y PLANCHA***</h2>
           <p>Marlon Antonio Carvajal Varjas</p>
           <p>NIT. 1.059.241.653-1 No responsable del IVA</p>
           <p>Cra. 6 No. 3-85 Centro Tel: 315707900</p>
@@ -46,12 +54,12 @@
           <span>POS 545</span>
         </section>
 
-        <p class="receipt__date"><span>FECHA: <b id="receipt-date"></b></span><span>Hora: <b id="receipt-time"></b></span></p>
+        <p class="receipt__date"><span>FECHA: <span id="receipt-date"></span></span><span>Hora: <span id="receipt-time"></span></span></p>
         <p>CC/NIT: 222222222222</p>
         <p>CONSUMIDOR FINAL</p>
-        <p class="receipt__note">Nota: <b id="receipt-note"></b></p>
+        <p class="receipt__note">Nota: <span id="receipt-note"></span></p>
 
-        <div class="section-title">PRODUCTOS</div>
+        <div id="receipt-section-title" class="section-title">PRODUCTOS</div>
 
         <section class="product-table" aria-label="Producto vendido">
           <div class="product-head">
@@ -63,10 +71,10 @@
           <div id="receipt-products"></div>
         </section>
 
-        <div class="total-bar"><strong>TOTAL DOCUMENTO:</strong><strong id="receipt-total"></strong></div>
+        <div class="total-bar invoice-only"><strong>TOTAL DOCUMENTO:</strong><strong id="receipt-total"></strong></div>
 
-        <section class="payment">
-          <div class="payment__head"><strong>FORMA DE PAGO</strong><strong>Valor</strong></div>
+        <section class="payment invoice-only">
+          <div class="payment__head"><span>FORMA DE PAGO</span><strong>Valor</strong></div>
           <div><span>Efectivo</span><span id="receipt-cash"></span></div>
           <div><span>Cambio</span><span id="receipt-change"></span></div>
         </section>

@@ -1,4 +1,5 @@
 const EXAMPLE = {
+  printType: "invoice",
   note: "SOPA, PAPA, CERDO, LLEVAR",
   cashier: "Yeison Jimenez",
   products: [
@@ -12,13 +13,16 @@ const EXAMPLE = {
 };
 
 const form = document.querySelector("#receipt-form");
+const printTypeField = document.querySelector("#print-type");
 const noteField = document.querySelector("#note");
 const cashierField = document.querySelector("#cashier");
 const productsList = document.querySelector("#products-list");
 const productTemplate = document.querySelector("#product-template");
 
 const output = {
+  receipt: document.querySelector("#receipt"),
   note: document.querySelector("#receipt-note"),
+  sectionTitle: document.querySelector("#receipt-section-title"),
   products: document.querySelector("#receipt-products"),
   total: document.querySelector("#receipt-total"),
   cash: document.querySelector("#receipt-cash"),
@@ -123,7 +127,10 @@ function createReceiptProduct(product) {
 function render() {
   const data = readForm();
   const cash = nextCashAmount(data.total);
+  const isCommand = printTypeField.value === "command";
 
+  output.receipt.classList.toggle("receipt--command", isCommand);
+  output.sectionTitle.textContent = isCommand ? "COMANDA" : "PRODUCTOS";
   output.note.textContent = data.note || "—";
   output.cashier.textContent = cashierField.value;
   output.products.replaceChildren(...data.products.map(createReceiptProduct));
@@ -133,6 +140,7 @@ function render() {
   output.message.textContent = "";
 
   localStorage.setItem("grano-plancha-receipt", JSON.stringify({
+    printType: printTypeField.value,
     note: noteField.value,
     cashier: cashierField.value,
     products: readProducts(false).map(({ code, description, quantity, unitPrice }) => ({
@@ -189,6 +197,7 @@ function migrateSavedProducts(values) {
 }
 
 function loadValues(values) {
+  printTypeField.value = values?.printType === "command" ? "command" : EXAMPLE.printType;
   noteField.value = values?.note ?? EXAMPLE.note;
   cashierField.value = values?.cashier === "Julian Andres" ? "Julian Andres" : EXAMPLE.cashier;
   productsList.replaceChildren();

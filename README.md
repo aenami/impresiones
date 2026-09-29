@@ -8,12 +8,15 @@ Hacé doble clic en `iniciar.bat`. No requiere instalación ni conexión a inter
 
 ## Preparar una impresión
 
-1. Escribí la nota.
-2. Elegí el cajero que atendió.
-3. Cambiá el código, la descripción, la cantidad y el valor unitario del producto.
-4. Usá **Agregar producto** para incluir más filas y **Eliminar** para retirar una.
-5. Pulsá **Imprimir**.
-6. En la ventana de impresión seleccioná la impresora térmica, papel de **80 mm**, escala **100 %**, márgenes **ninguno** y desactivá encabezados y pies de página del navegador.
+1. Elegí **Factura** o **Comanda** en el campo Formato.
+2. Escribí la nota.
+3. Elegí el cajero que atendió.
+4. Cambiá el código, la descripción, la cantidad y el valor unitario del producto.
+5. Usá **Agregar producto** para incluir más filas y **Eliminar** para retirar una.
+6. Pulsá **Imprimir**.
+7. En la ventana de impresión seleccioná la impresora térmica, papel de **80 mm**, escala **100 %**, márgenes **ninguno** y desactivá encabezados y pies de página del navegador.
+
+La factura incluye el total y la forma de pago. La comanda cambia la franja de productos por **COMANDA** y omite el total, el efectivo y el cambio.
 
 La fecha y la hora se toman automáticamente del computador. El total de todos los productos, el efectivo y el cambio se calculan automáticamente. Los últimos datos escritos quedan guardados en ese navegador.
 

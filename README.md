@@ -20,7 +20,7 @@ La factura incluye el total y la forma de pago. La comanda cambia la franja de p
 
 La fecha y la hora se toman automáticamente del computador. El total de todos los productos, el efectivo y el cambio se calculan automáticamente. Los últimos datos escritos quedan guardados en ese navegador.
 
-El botón **Pantalla negra** oculta el formulario y deja toda la ventana en negro. Para restaurarla, hacé clic nuevamente en la esquina inferior izquierda.
+La aplicación inicia con la ventana completamente negra. Para mostrar el formulario, hacé clic en la esquina inferior izquierda. El botón **Pantalla negra** permite ocultarlo nuevamente.
 
 ## Ajustar para otra impresora
 

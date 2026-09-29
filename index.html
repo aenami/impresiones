@@ -7,7 +7,7 @@
     <title>Color negro</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body class="blackout">
     <main>
       <h1 class="sr-only">Preparar impresión</h1>
 
@@ -90,7 +90,13 @@
       </article>
     </main>
 
-    <button id="blackout-toggle" class="blackout-toggle" type="button" aria-pressed="false">
+    <button
+      id="blackout-toggle"
+      class="blackout-toggle"
+      type="button"
+      aria-pressed="true"
+      aria-label="Restaurar página"
+    >
       Pantalla negra
     </button>
 

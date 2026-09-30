@@ -36,6 +36,11 @@
         <div id="products-list" class="products-list"></div>
         <button id="add-product" class="button-secondary" type="button">Agregar producto</button>
 
+        <label class="checkbox-field" for="reset-after-print">
+          <input id="reset-after-print" name="resetAfterPrint" type="checkbox" />
+          <span>Limpiar después de imprimir</span>
+        </label>
+
         <button id="print-button" type="button">Imprimir</button>
         <p id="form-message" class="form-message" role="alert" aria-live="assertive"></p>
       </form>
@@ -109,7 +114,14 @@
 
         <div class="field">
           <label data-label="description">Descripción</label>
-          <input data-field="description" type="text" maxlength="28" required />
+          <input
+            data-field="description"
+            type="text"
+            maxlength="28"
+            list="product-catalog"
+            autocomplete="off"
+            required
+          />
         </div>
 
         <div class="product-fields">
@@ -128,6 +140,14 @@
         </div>
       </section>
     </template>
+
+    <datalist id="product-catalog">
+      <option value="EJECUTIVO"></option>
+      <option value="CAFÉ ALCAZAR"></option>
+      <option value="ALMOJABANAS"></option>
+      <option value="TINTO"></option>
+      <option value="PINTADO"></option>
+    </datalist>
 
     <script src="app.js"></script>
   </body>

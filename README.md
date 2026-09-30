@@ -13,12 +13,17 @@ Hacé doble clic en `iniciar.bat`. No requiere instalación ni conexión a inter
 3. Elegí el cajero que atendió.
 4. Cambiá el código, la descripción, la cantidad y el valor unitario del producto.
 5. Usá **Agregar producto** para incluir más filas y **Eliminar** para retirar una.
-6. Pulsá **Imprimir**.
-7. En la ventana de impresión seleccioná la impresora térmica, papel de **80 mm**, escala **100 %**, márgenes **ninguno** y desactivá encabezados y pies de página del navegador.
+6. Si querés preparar una nueva orden después de imprimir, marcá **Limpiar después de imprimir**.
+7. Pulsá **Imprimir**.
+8. En la ventana de impresión seleccioná la impresora térmica, papel de **80 mm**, escala **100 %**, márgenes **ninguno** y desactivá encabezados y pies de página del navegador.
 
 La factura incluye el total y la forma de pago. La comanda cambia la franja de productos por **COMANDA** y omite el total, el efectivo y el cambio.
 
 La fecha y la hora se toman automáticamente del computador. El total de todos los productos, el efectivo y el cambio se calculan automáticamente. Los últimos datos escritos quedan guardados en ese navegador.
+
+Podés recorrer los controles con las cuatro flechas. Dentro de los campos de texto, izquierda y derecha conservan su función de mover el cursor; al llegar al principio o al final pasan al control vecino.
+
+Al escribir un nombre completo del catálogo, el código y el precio se completan automáticamente. El catálogo inicial incluye EJECUTIVO, CAFÉ ALCAZAR, ALMOJABANAS, TINTO y PINTADO.
 
 La aplicación inicia con la ventana completamente negra. Para mostrar el formulario, hacé clic en la esquina inferior izquierda. El botón **Pantalla negra** permite ocultarlo nuevamente.
 

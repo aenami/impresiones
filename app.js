@@ -1,10 +1,19 @@
+const PRODUCT_CATALOG = [
+  { name: "EJECUTIVO", code: "78", unitPrice: 12000 },
+  { name: "CAFÉ ALCAZAR", code: "33", unitPrice: 6000 },
+  { name: "ALMOJABANAS", code: "171", unitPrice: 2400 },
+  { name: "TINTO", code: "33", unitPrice: 2800 },
+  { name: "PINTADO", code: "39", unitPrice: 5300 },
+];
+
 const EXAMPLE = {
   printType: "invoice",
   note: "SOPA, PAPA, CERDO, LLEVAR",
   cashier: "Yeison Jimenez",
+  resetAfterPrint: false,
   products: [
     {
-      code: "79",
+      code: "78",
       description: "EJECUTIVO",
       quantity: 1,
       unitPrice: 12000,
@@ -19,6 +28,8 @@ const cashierField = document.querySelector("#cashier");
 const productsList = document.querySelector("#products-list");
 const productTemplate = document.querySelector("#product-template");
 const blackoutToggle = document.querySelector("#blackout-toggle");
+const resetAfterPrintField = document.querySelector("#reset-after-print");
+let resetAfterPrintPending = false;
 
 const output = {
   receipt: document.querySelector("#receipt"),
@@ -41,6 +52,16 @@ const quantityFormat = new Intl.NumberFormat("es-CO", { maximumFractionDigits: 2
 function normalizeText(value) {
   return String(value ?? "").trim().replace(/\s+/g, " ").toLocaleUpperCase("es-CO");
 }
+
+function productNameKey(value) {
+  return normalizeText(value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+const catalogByName = new Map(
+  PRODUCT_CATALOG.map((product) => [productNameKey(product.name), product]),
+);
 
 function receiptDate(now = new Date()) {
   return new Intl.DateTimeFormat("es-CO", {
@@ -144,6 +165,7 @@ function render() {
     printType: printTypeField.value,
     note: noteField.value,
     cashier: cashierField.value,
+    resetAfterPrint: resetAfterPrintField.checked,
     products: readProducts(false).map(({ code, description, quantity, unitPrice }) => ({
       code,
       description,
@@ -184,6 +206,16 @@ function addProduct(product = {}) {
   return item;
 }
 
+function fillProductFromCatalog(descriptionField) {
+  const product = catalogByName.get(productNameKey(descriptionField.value));
+  if (!product) return;
+
+  const item = descriptionField.closest(".product-item");
+  descriptionField.value = product.name;
+  item.querySelector('[data-field="code"]').value = product.code;
+  item.querySelector('[data-field="unitPrice"]').value = product.unitPrice;
+}
+
 function migrateSavedProducts(values) {
   if (Array.isArray(values?.products) && values.products.length > 0) return values.products;
   if (values && (values.code || values.description || values.unitPrice)) {
@@ -201,9 +233,31 @@ function loadValues(values) {
   printTypeField.value = values?.printType === "command" ? "command" : EXAMPLE.printType;
   noteField.value = values?.note ?? EXAMPLE.note;
   cashierField.value = values?.cashier === "Julian Andres" ? "Julian Andres" : EXAMPLE.cashier;
+  resetAfterPrintField.checked = Boolean(values?.resetAfterPrint);
   productsList.replaceChildren();
   migrateSavedProducts(values).forEach(addProduct);
   render();
+}
+
+function resetOrderForm() {
+  noteField.value = "";
+  productsList.replaceChildren();
+  const item = addProduct({ quantity: 1 });
+  render();
+  item.querySelector('[data-field="description"]').focus();
+}
+
+function navigationControls() {
+  return [...form.querySelectorAll("input, textarea, select, #add-product, #print-button")]
+    .filter((element) => !element.disabled && element.offsetParent !== null);
+}
+
+function canLeaveTextField(element, direction) {
+  if (!element.matches('input[type="text"], textarea')) return true;
+  if (element.selectionStart !== element.selectionEnd) return false;
+  return direction < 0
+    ? element.selectionStart === 0
+    : element.selectionEnd === element.value.length;
 }
 
 function loadSavedOrExample() {
@@ -215,7 +269,34 @@ function loadSavedOrExample() {
   }
 }
 
-form.addEventListener("input", render);
+form.addEventListener("input", (event) => {
+  if (event.target.matches('[data-field="description"]')) {
+    fillProductFromCatalog(event.target);
+  }
+  render();
+});
+
+form.addEventListener("keydown", (event) => {
+  const directions = {
+    ArrowUp: -1,
+    ArrowLeft: -1,
+    ArrowDown: 1,
+    ArrowRight: 1,
+  };
+  const direction = directions[event.key];
+  if (!direction) return;
+
+  const isHorizontal = event.key === "ArrowLeft" || event.key === "ArrowRight";
+  if (isHorizontal && !canLeaveTextField(event.target, direction)) return;
+
+  const controls = navigationControls();
+  const currentIndex = controls.indexOf(event.target);
+  if (currentIndex === -1) return;
+
+  event.preventDefault();
+  const nextIndex = (currentIndex + direction + controls.length) % controls.length;
+  controls[nextIndex].focus();
+});
 
 document.querySelector("#add-product").addEventListener("click", () => {
   const item = addProduct();
@@ -245,11 +326,17 @@ document.querySelector("#print-button").addEventListener("click", () => {
     output.message.textContent = "Completá los datos de todos los productos antes de imprimir.";
     return;
   }
+  resetAfterPrintPending = resetAfterPrintField.checked;
   updateDateTime();
   window.print();
 });
 
 window.addEventListener("beforeprint", updateDateTime);
+window.addEventListener("afterprint", () => {
+  if (!resetAfterPrintPending) return;
+  resetAfterPrintPending = false;
+  resetOrderForm();
+});
 setInterval(updateDateTime, 1000);
 updateDateTime();
 loadSavedOrExample();

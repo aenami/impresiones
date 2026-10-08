@@ -5,9 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light" />
     <title>Color negro</title>
+    <script>
+      try {
+        const savedSettings = JSON.parse(localStorage.getItem("grano-plancha-receipt"));
+        if (savedSettings?.startBlackout !== false) {
+          document.documentElement.classList.add("blackout-pending");
+        }
+      } catch {
+        document.documentElement.classList.add("blackout-pending");
+      }
+    </script>
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body class="blackout">
+  <body>
     <main>
       <h1 class="sr-only">Preparar impresión</h1>
 
@@ -39,6 +49,11 @@
         <label class="checkbox-field" for="reset-after-print">
           <input id="reset-after-print" name="resetAfterPrint" type="checkbox" />
           <span>Limpiar después de imprimir</span>
+        </label>
+
+        <label class="checkbox-field" for="start-blackout">
+          <input id="start-blackout" name="startBlackout" type="checkbox" />
+          <span>Iniciar en pantalla negra</span>
         </label>
 
         <button id="print-button" type="button">Imprimir</button>
@@ -99,8 +114,8 @@
       id="blackout-toggle"
       class="blackout-toggle"
       type="button"
-      aria-pressed="true"
-      aria-label="Restaurar página"
+      aria-pressed="false"
+      aria-label="Activar pantalla negra"
     >
       Pantalla negra
     </button>

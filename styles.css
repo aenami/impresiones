@@ -206,14 +206,19 @@ button:focus-visible { outline: 2px solid #202124; outline-offset: 2px; }
 .blackout-toggle:hover { background: #ededed; }
 
 @media screen {
-  body.blackout {
+  html.blackout-pending { background: #000; }
+
+  body.blackout,
+  html.blackout-pending body {
     overflow: hidden;
     background: #000;
   }
 
-  body.blackout main { visibility: hidden; }
+  body.blackout main,
+  html.blackout-pending main { visibility: hidden; }
 
-  body.blackout .blackout-toggle {
+  body.blackout .blackout-toggle,
+  html.blackout-pending .blackout-toggle {
     right: auto;
     bottom: 0;
     left: 0;

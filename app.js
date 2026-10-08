@@ -11,6 +11,7 @@ const EXAMPLE = {
   note: "SOPA, PAPA, CERDO, LLEVAR",
   cashier: "Yeison Jimenez",
   resetAfterPrint: false,
+  startBlackout: true,
   products: [
     {
       code: "78",
@@ -29,6 +30,7 @@ const productsList = document.querySelector("#products-list");
 const productTemplate = document.querySelector("#product-template");
 const blackoutToggle = document.querySelector("#blackout-toggle");
 const resetAfterPrintField = document.querySelector("#reset-after-print");
+const startBlackoutField = document.querySelector("#start-blackout");
 let resetAfterPrintPending = false;
 
 const output = {
@@ -166,6 +168,7 @@ function render() {
     note: noteField.value,
     cashier: cashierField.value,
     resetAfterPrint: resetAfterPrintField.checked,
+    startBlackout: startBlackoutField.checked,
     products: readProducts(false).map(({ code, description, quantity, unitPrice }) => ({
       code,
       description,
@@ -234,8 +237,11 @@ function loadValues(values) {
   noteField.value = values?.note ?? EXAMPLE.note;
   cashierField.value = values?.cashier === "Julian Andres" ? "Julian Andres" : EXAMPLE.cashier;
   resetAfterPrintField.checked = Boolean(values?.resetAfterPrint);
+  startBlackoutField.checked = values?.startBlackout !== false;
   productsList.replaceChildren();
   migrateSavedProducts(values).forEach(addProduct);
+  setBlackout(startBlackoutField.checked);
+  document.documentElement.classList.remove("blackout-pending");
   render();
 }
 
@@ -272,6 +278,9 @@ function loadSavedOrExample() {
 form.addEventListener("input", (event) => {
   if (event.target.matches('[data-field="description"]')) {
     fillProductFromCatalog(event.target);
+  }
+  if (event.target === startBlackoutField && startBlackoutField.checked) {
+    setBlackout(true);
   }
   render();
 });
@@ -312,13 +321,17 @@ productsList.addEventListener("click", (event) => {
   render();
 });
 
-blackoutToggle.addEventListener("click", () => {
-  const isBlackout = document.body.classList.toggle("blackout");
+function setBlackout(isBlackout) {
+  document.body.classList.toggle("blackout", isBlackout);
   blackoutToggle.setAttribute("aria-pressed", String(isBlackout));
   blackoutToggle.setAttribute(
     "aria-label",
     isBlackout ? "Restaurar página" : "Activar pantalla negra",
   );
+}
+
+blackoutToggle.addEventListener("click", () => {
+  setBlackout(!document.body.classList.contains("blackout"));
 });
 
 document.querySelector("#print-button").addEventListener("click", () => {

@@ -25,7 +25,7 @@ Podés recorrer los controles con las cuatro flechas. Dentro de los campos de te
 
 Al escribir un nombre completo del catálogo, el código y el precio se completan automáticamente. El catálogo inicial incluye EJECUTIVO, CAFÉ ALCAZAR, ALMOJABANAS, TINTO y PINTADO.
 
-La opción **Iniciar en pantalla negra** guarda si la aplicación debe ocultar el formulario automáticamente en futuras aperturas. Para mostrarlo, hacé clic en la esquina inferior izquierda; después podés desmarcar la opción si querés que la próxima apertura sea normal. El botón **Pantalla negra** permite ocultarlo manualmente sin cambiar esa preferencia.
+La aplicación inicia con la ventana completamente negra. Para mostrar el formulario, hacé clic en la esquina inferior izquierda. La opción **Pantalla negra después de imprimir** permite volver automáticamente a ese estado al cerrar la impresión. El botón **Pantalla negra** también permite ocultarlo manualmente.
 
 ## Ajustar para otra impresora
 

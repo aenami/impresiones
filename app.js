@@ -11,7 +11,7 @@ const EXAMPLE = {
   note: "SOPA, PAPA, CERDO, LLEVAR",
   cashier: "Yeison Jimenez",
   resetAfterPrint: false,
-  startBlackout: true,
+  blackoutAfterPrint: true,
   products: [
     {
       code: "78",
@@ -30,8 +30,9 @@ const productsList = document.querySelector("#products-list");
 const productTemplate = document.querySelector("#product-template");
 const blackoutToggle = document.querySelector("#blackout-toggle");
 const resetAfterPrintField = document.querySelector("#reset-after-print");
-const startBlackoutField = document.querySelector("#start-blackout");
+const blackoutAfterPrintField = document.querySelector("#blackout-after-print");
 let resetAfterPrintPending = false;
+let blackoutAfterPrintPending = false;
 
 const output = {
   receipt: document.querySelector("#receipt"),
@@ -168,7 +169,7 @@ function render() {
     note: noteField.value,
     cashier: cashierField.value,
     resetAfterPrint: resetAfterPrintField.checked,
-    startBlackout: startBlackoutField.checked,
+    blackoutAfterPrint: blackoutAfterPrintField.checked,
     products: readProducts(false).map(({ code, description, quantity, unitPrice }) => ({
       code,
       description,
@@ -237,11 +238,11 @@ function loadValues(values) {
   noteField.value = values?.note ?? EXAMPLE.note;
   cashierField.value = values?.cashier === "Julian Andres" ? "Julian Andres" : EXAMPLE.cashier;
   resetAfterPrintField.checked = Boolean(values?.resetAfterPrint);
-  startBlackoutField.checked = values?.startBlackout !== false;
+  blackoutAfterPrintField.checked = Boolean(
+    values?.blackoutAfterPrint ?? values?.startBlackout ?? EXAMPLE.blackoutAfterPrint,
+  );
   productsList.replaceChildren();
   migrateSavedProducts(values).forEach(addProduct);
-  setBlackout(startBlackoutField.checked);
-  document.documentElement.classList.remove("blackout-pending");
   render();
 }
 
@@ -278,9 +279,6 @@ function loadSavedOrExample() {
 form.addEventListener("input", (event) => {
   if (event.target.matches('[data-field="description"]')) {
     fillProductFromCatalog(event.target);
-  }
-  if (event.target === startBlackoutField && startBlackoutField.checked) {
-    setBlackout(true);
   }
   render();
 });
@@ -340,15 +338,19 @@ document.querySelector("#print-button").addEventListener("click", () => {
     return;
   }
   resetAfterPrintPending = resetAfterPrintField.checked;
+  blackoutAfterPrintPending = blackoutAfterPrintField.checked;
   updateDateTime();
   window.print();
 });
 
 window.addEventListener("beforeprint", updateDateTime);
 window.addEventListener("afterprint", () => {
-  if (!resetAfterPrintPending) return;
+  const shouldReset = resetAfterPrintPending;
+  const shouldBlackout = blackoutAfterPrintPending;
   resetAfterPrintPending = false;
-  resetOrderForm();
+  blackoutAfterPrintPending = false;
+  if (shouldReset) resetOrderForm();
+  if (shouldBlackout) setBlackout(true);
 });
 setInterval(updateDateTime, 1000);
 updateDateTime();

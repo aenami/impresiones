@@ -161,7 +161,7 @@ function render() {
   const isCommand = format === "command";
 
   output.receipt.classList.toggle("receipt--command", isCommand);
-  output.sectionTitle.textContent = isCommand ? "COMANDA" : "PRODUCTOS";
+  output.sectionTitle.textContent = "PRODUCTOS";
   output.note.textContent = data.note || "—";
   output.cashier.textContent = cashierField.value;
   output.products.replaceChildren(...data.products.map(createReceiptProduct));

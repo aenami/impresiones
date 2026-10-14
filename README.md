@@ -21,7 +21,7 @@ El formulario conserva los mismos datos para las dos impresiones. Entre ambas qu
 
 El navegador no informa si el diálogo terminó con impresión o cancelación. Si cancelás el de la factura, las opciones de finalización también se ejecutarán.
 
-La factura incluye el total y la forma de pago. La comanda cambia la franja de productos por **COMANDA** y omite el total, el efectivo y el cambio.
+La factura incluye el total, la forma de pago y el aviso de devoluciones. La comanda muestra **COMANDA** sobre el número de pedido y **PRODUCTOS** sobre el listado; omite el total, el efectivo, el cambio y el aviso de devoluciones.
 
 La fecha y la hora se toman automáticamente del computador. El total de todos los productos, el efectivo y el cambio se calculan automáticamente. Los últimos datos escritos quedan guardados en ese navegador.
 

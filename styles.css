@@ -293,6 +293,14 @@ button:focus-visible { outline: 2px solid #202124; outline-offset: 2px; }
   .receipt__business p:first-of-type { font-size: 13px; }
   .receipt__business p:last-of-type { font-size: 12px; }
   .receipt__order { display: grid; gap: 0; margin: 5px 0 4px; text-align: center; font-size: 16px; }
+  .receipt__command-title { display: none; }
+  .receipt--command .receipt__command-title {
+    display: block;
+    margin: 0 0 2px;
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 1.1;
+  }
   .receipt__date { display: flex; justify-content: space-between; gap: 10px; white-space: nowrap; }
   .receipt__note { margin-top: 3px !important; overflow-wrap: anywhere; }
 
@@ -332,5 +340,10 @@ button:focus-visible { outline: 2px solid #202124; outline-offset: 2px; }
   .payment__head { padding-bottom: 2px !important; border-bottom: 1px dashed #000; }
   .returns { margin: 7px 0 !important; text-align: center; }
   .receipt__footer { padding-top: 5px; border-top: 1px dashed #000; text-align: center; }
+  .receipt--command .receipt__business p,
+  .receipt--command .receipt__order span,
+  .receipt--command > p,
+  .receipt--command .product-row span,
+  .receipt--command .receipt__footer p { -webkit-text-stroke: .15px #000; }
   .receipt--command .invoice-only { display: none !important; }
 }

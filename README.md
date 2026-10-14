@@ -15,11 +15,12 @@ Hacé doble clic en `iniciar.bat`. No requiere instalación ni conexión a inter
 5. Usá **Agregar producto** para incluir más filas y **Eliminar** para retirar una.
 6. Marcá **Limpiar después del ciclo** y **Pantalla negra después del ciclo** según prefieras.
 7. Pulsá **Imprimir comanda (1/2)** y elegí la impresora de comandas en el diálogo.
-8. Al cerrar ese diálogo, pulsá **Imprimir factura (2/2)** y elegí la impresora de facturas.
+8. Si la comanda salió, pulsá **Confirmar comanda e imprimir factura (2/2)** y elegí la impresora de facturas. Si cancelaste el diálogo, pulsá **Reimprimir comanda**.
+9. Cuando salga la factura, pulsá **Confirmar factura impresa** para terminar. Si cancelaste su diálogo, pulsá **Reimprimir factura**.
 
-El formulario conserva los mismos datos para las dos impresiones. Entre ambas queda bloqueado y el botón de factura recibe el foco, así que podés pulsar `Enter` para abrir enseguida el segundo diálogo. Si cerraste el primero sin imprimir, usá **Repetir comanda**; **Cancelar ciclo** permite volver a editar sin limpiar el pedido. La limpieza y la pantalla negra se aplican al cerrar el segundo diálogo. En cada impresora configurá papel de **80 mm**, escala **100 %**, márgenes **ninguno** y desactivá encabezados y pies de página del navegador.
+El formulario conserva los mismos datos para las dos impresiones. Entre ambas queda bloqueado y el botón de confirmación recibe el foco, así que podés pulsar `Enter` para abrir enseguida el segundo diálogo. **Cancelar ciclo** permite volver a editar sin limpiar el pedido. La limpieza y la pantalla negra se aplican solo al confirmar que salió la factura. En cada impresora configurá papel de **80 mm**, escala **100 %**, márgenes **ninguno** y desactivá encabezados y pies de página del navegador.
 
-El navegador no informa si el diálogo terminó con impresión o cancelación. Si cancelás el de la factura, las opciones de finalización también se ejecutarán.
+El navegador no informa si el diálogo terminó con impresión o cancelación. Por eso, confirmá cada impresión antes de avanzar.
 
 La factura incluye el total, la forma de pago y el aviso de devoluciones. La comanda muestra **COMANDA** sobre el número de pedido y **PRODUCTOS** sobre el listado; omite el total, el efectivo, el cambio y el aviso de devoluciones.
 
@@ -27,7 +28,7 @@ La fecha y la hora se toman automáticamente del computador. El total de todos l
 
 Podés recorrer los controles con las cuatro flechas. Dentro de los campos de texto, izquierda y derecha conservan su función de mover el cursor; al llegar al principio o al final pasan al control vecino.
 
-Al escribir un nombre completo del catálogo, el código y el precio se completan automáticamente. El catálogo inicial incluye EJECUTIVO, CAFÉ ALCAZAR, ALMOJABANAS, TINTO y PINTADO.
+Al escribir un nombre completo del catálogo, el código y el precio se completan automáticamente. El catálogo inicial incluye EJECUTIVO, CAFÉ ALCAZAR, ALMOJABANAS, TINTO, PINTADO, MILO CALIENTE, BUÑUELO y ADICIONAL VARIOS.
 
 La aplicación inicia con la ventana completamente negra. Para mostrar el formulario, hacé clic en la esquina inferior izquierda. La opción **Pantalla negra después del ciclo** permite volver automáticamente a ese estado al terminar las impresiones. El botón **Pantalla negra** también permite ocultarlo manualmente.
 

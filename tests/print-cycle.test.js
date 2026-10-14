@@ -71,12 +71,12 @@ function startApp() {
     "blackout-after-print", "receipt", "receipt-note", "receipt-section-title",
     "receipt-products", "receipt-total", "receipt-cash", "receipt-change",
     "receipt-date", "receipt-time", "footer-datetime", "receipt-cashier", "form-message",
-    "add-product", "repeat-command", "cancel-cycle",
+    "add-product", "repeat-print", "cancel-cycle",
   ];
   const nodes = Object.fromEntries(ids.map((id) => [id, element()]));
   nodes["print-step"].hidden = true;
   nodes["cycle-actions"].hidden = true;
-  nodes["repeat-command"].inCycleActions = true;
+  nodes["repeat-print"].inCycleActions = true;
   nodes["cancel-cycle"].inCycleActions = true;
   nodes["receipt-form"].reportValidity = () => true;
 
@@ -100,7 +100,7 @@ function startApp() {
     nodes["print-mode"], nodes.note, nodes.cashier,
     ...items.flatMap((item) => [...Object.values(item.fields), item.remove]),
     nodes["add-product"], nodes["reset-after-print"], nodes["blackout-after-print"],
-    nodes["print-button"], nodes["repeat-command"], nodes["cancel-cycle"],
+    nodes["print-button"], nodes["repeat-print"], nodes["cancel-cycle"],
   ];
 
   const body = element();
@@ -129,7 +129,7 @@ function startApp() {
   return { nodes, items, body, window, storage, click, closePrintDialog };
 }
 
-test("comanda y factura conservan el pedido y finalizan después del segundo diálogo", () => {
+test("cerrar un diálogo no avanza: solo las confirmaciones completan ambas impresiones", () => {
   const app = startApp();
   app.click("blackout-toggle");
   app.nodes["reset-after-print"].checked = true;
@@ -142,8 +142,8 @@ test("comanda y factura conservan el pedido y finalizan después del segundo di�
   assert.equal(app.items[0].fields.description.value, "EJECUTIVO");
   app.closePrintDialog();
 
-  assert.equal(app.nodes["print-button"].textContent, "Imprimir factura (2/2)");
-  assert.equal(app.nodes.receipt.classList.contains("receipt--command"), false);
+  assert.equal(app.nodes["print-button"].textContent, "Confirmar comanda e imprimir factura (2/2)");
+  assert.equal(app.nodes.receipt.classList.contains("receipt--command"), true);
   assert.equal(app.nodes["print-mode"].disabled, true);
   assert.equal(app.items[0].fields.description.value, "EJECUTIVO");
   assert.equal(app.body.classList.contains("blackout"), false);
@@ -151,7 +151,13 @@ test("comanda y factura conservan el pedido y finalizan después del segundo di�
 
   app.click("print-button");
   assert.equal(app.window.printCalls, 2);
+  assert.equal(app.nodes.receipt.classList.contains("receipt--command"), false);
   app.closePrintDialog();
+  assert.equal(app.nodes["print-button"].textContent, "Confirmar factura impresa");
+  assert.equal(app.items[0].fields.description.value, "EJECUTIVO");
+  assert.equal(app.body.classList.contains("blackout"), false);
+
+  app.click("print-button");
   assert.equal(app.items[0].fields.description.value, "");
   assert.equal(app.nodes.note.value, "");
   assert.equal(app.body.classList.contains("blackout"), true);
@@ -159,18 +165,19 @@ test("comanda y factura conservan el pedido y finalizan después del segundo di�
   assert.equal(app.nodes["print-button"].textContent, "Imprimir comanda (1/2)");
 });
 
-test("se puede repetir la comanda o cancelar el ciclo sin limpiar", () => {
+test("se puede reimprimir la comanda o cancelar el ciclo sin limpiar", () => {
   const app = startApp();
   app.click("blackout-toggle");
   app.nodes["reset-after-print"].checked = true;
   app.nodes["blackout-after-print"].checked = true;
   app.click("print-button");
   app.closePrintDialog();
-  app.click("repeat-command");
+  assert.equal(app.nodes.receipt.classList.contains("receipt--command"), true);
+  app.click("repeat-print");
   assert.equal(app.window.printCalls, 2);
   assert.equal(app.nodes.receipt.classList.contains("receipt--command"), true);
   app.closePrintDialog();
-  assert.equal(app.nodes["print-button"].textContent, "Imprimir factura (2/2)");
+  assert.equal(app.nodes["print-button"].textContent, "Confirmar comanda e imprimir factura (2/2)");
 
   app.click("cancel-cycle");
   assert.equal(app.items[0].fields.description.value, "EJECUTIVO");
@@ -178,7 +185,28 @@ test("se puede repetir la comanda o cancelar el ciclo sin limpiar", () => {
   assert.equal(app.nodes["print-mode"].disabled, false);
 });
 
-test("la impresión individual conserva un único diálogo", () => {
+test("cancelar la factura permite reimprimirla antes de finalizar", () => {
+  const app = startApp();
+  app.click("blackout-toggle");
+  app.nodes["reset-after-print"].checked = true;
+  app.nodes["blackout-after-print"].checked = true;
+  app.click("print-button");
+  app.closePrintDialog();
+  app.click("print-button");
+  app.closePrintDialog();
+
+  assert.equal(app.nodes["repeat-print"].textContent, "Reimprimir factura");
+  assert.equal(app.items[0].fields.description.value, "EJECUTIVO");
+  assert.equal(app.body.classList.contains("blackout"), false);
+  app.click("repeat-print");
+  assert.equal(app.window.printCalls, 3);
+  app.closePrintDialog();
+  assert.equal(app.nodes["print-button"].textContent, "Confirmar factura impresa");
+  app.click("print-button");
+  assert.equal(app.body.classList.contains("blackout"), true);
+});
+
+test("la impresión individual también requiere confirmación", () => {
   const app = startApp();
   app.click("blackout-toggle");
   app.nodes["print-mode"].value = "invoice";
@@ -189,6 +217,27 @@ test("la impresión individual conserva un único diálogo", () => {
   assert.equal(app.nodes.receipt.classList.contains("receipt--command"), false);
   app.closePrintDialog();
   assert.equal(app.window.printCalls, 1);
-  assert.equal(app.nodes["cycle-actions"].hidden, true);
+  assert.equal(app.nodes["print-button"].textContent, "Confirmar factura impresa");
+  assert.equal(app.nodes["cycle-actions"].hidden, false);
   assert.equal(app.items[0].fields.description.value, "EJECUTIVO");
+  app.click("print-button");
+  assert.equal(app.nodes["cycle-actions"].hidden, true);
+});
+
+test("los nuevos productos completan código y precio", () => {
+  const app = startApp();
+  const description = app.items[0].fields.description;
+  description.matches = (selector) => selector === '[data-field="description"]';
+  description.closest = () => app.items[0];
+
+  for (const [name, code, price] of [
+    ["MILO CALIENTE", "38", 7300],
+    ["BUNUELO", "173", 1300],
+    ["ADICIONAL VARIOS", "101", 500],
+  ]) {
+    description.value = name;
+    app.nodes["receipt-form"].listeners.input({ target: description });
+    assert.equal(app.items[0].fields.code.value, code);
+    assert.equal(app.items[0].fields.unitPrice.value, price);
+  }
 });

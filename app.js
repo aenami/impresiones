@@ -4,6 +4,9 @@ const PRODUCT_CATALOG = [
   { name: "ALMOJABANAS", code: "171", unitPrice: 2400 },
   { name: "TINTO", code: "33", unitPrice: 2800 },
   { name: "PINTADO", code: "39", unitPrice: 5300 },
+  { name: "MILO CALIENTE", code: "38", unitPrice: 7300 },
+  { name: "BUÑUELO", code: "173", unitPrice: 1300 },
+  { name: "ADICIONAL VARIOS", code: "101", unitPrice: 500 },
 ];
 
 const EXAMPLE = {
@@ -27,6 +30,7 @@ const printModeField = document.querySelector("#print-mode");
 const printButton = document.querySelector("#print-button");
 const printStep = document.querySelector("#print-step");
 const cycleActions = document.querySelector("#cycle-actions");
+const repeatPrintButton = document.querySelector("#repeat-print");
 const noteField = document.querySelector("#note");
 const cashierField = document.querySelector("#cashier");
 const productsList = document.querySelector("#products-list");
@@ -36,7 +40,7 @@ const resetAfterPrintField = document.querySelector("#reset-after-print");
 const blackoutAfterPrintField = document.querySelector("#blackout-after-print");
 let activePrintFormat = null;
 let pendingPrint = null;
-let awaitingInvoice = false;
+let printReview = null;
 let cyclePreferences = null;
 
 const output = {
@@ -272,9 +276,17 @@ function setOrderEditingLocked(locked) {
 }
 
 function updatePrintControls() {
-  if (awaitingInvoice) {
-    printButton.textContent = "Imprimir factura (2/2)";
-    printStep.textContent = "Comanda: diálogo cerrado. Elegí la impresora de factura y continuá.";
+  if (printReview) {
+    const isCommand = printReview.format === "command";
+    const name = isCommand ? "comanda" : "factura";
+    printButton.textContent = isCommand && printReview.inCycle
+      ? "Confirmar comanda e imprimir factura (2/2)"
+      : `Confirmar ${name} impresa`;
+    const nextStep = isCommand && printReview.inCycle
+      ? "continuar con la factura"
+      : "terminar el pedido";
+    printStep.textContent = `¿Se imprimió la ${name}? Confirmá para ${nextStep} o repetí la impresión.`;
+    repeatPrintButton.textContent = `Reimprimir ${name}`;
     printStep.hidden = false;
     cycleActions.hidden = false;
     return;
@@ -291,6 +303,7 @@ function updatePrintControls() {
 
 function startPrint(format, inCycle) {
   if (pendingPrint) return;
+  printReview = null;
   pendingPrint = { format, inCycle };
   activePrintFormat = format;
   render();
@@ -301,7 +314,7 @@ function startPrint(format, inCycle) {
 function endPrintCycle() {
   const preferences = cyclePreferences;
   cyclePreferences = null;
-  awaitingInvoice = false;
+  printReview = null;
   activePrintFormat = null;
   setOrderEditingLocked(false);
   updatePrintControls();
@@ -392,8 +405,12 @@ blackoutToggle.addEventListener("click", () => {
 
 printButton.addEventListener("click", () => {
   if (pendingPrint) return;
-  if (awaitingInvoice) {
-    startPrint("invoice", true);
+  if (printReview) {
+    if (printReview.format === "command" && printReview.inCycle) {
+      startPrint("invoice", true);
+    } else {
+      endPrintCycle();
+    }
     return;
   }
 
@@ -410,14 +427,14 @@ printButton.addEventListener("click", () => {
   startPrint(inCycle ? "command" : printModeField.value, inCycle);
 });
 
-document.querySelector("#repeat-command").addEventListener("click", () => {
-  if (awaitingInvoice) startPrint("command", true);
+repeatPrintButton.addEventListener("click", () => {
+  if (printReview && !pendingPrint) startPrint(printReview.format, printReview.inCycle);
 });
 
 document.querySelector("#cancel-cycle").addEventListener("click", () => {
-  if (!awaitingInvoice || pendingPrint) return;
+  if (!printReview || pendingPrint) return;
   cyclePreferences = null;
-  awaitingInvoice = false;
+  printReview = null;
   activePrintFormat = null;
   setOrderEditingLocked(false);
   render();
@@ -430,18 +447,11 @@ window.addEventListener("afterprint", () => {
   const completedPrint = pendingPrint;
   if (!completedPrint) return;
   pendingPrint = null;
-
-  if (completedPrint.inCycle && completedPrint.format === "command") {
-    awaitingInvoice = true;
-    activePrintFormat = "invoice";
-    setOrderEditingLocked(true);
-    render();
-    updatePrintControls();
-    printButton.focus();
-    return;
-  }
-
-  endPrintCycle();
+  printReview = completedPrint;
+  setOrderEditingLocked(true);
+  render();
+  updatePrintControls();
+  printButton.focus();
 });
 setInterval(updateDateTime, 1000);
 updateDateTime();

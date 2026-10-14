@@ -148,6 +148,25 @@ button:focus-visible { outline: 2px solid #202124; outline-offset: 2px; }
 
 .button-secondary:hover { background: #f1f1f1; }
 
+.print-step {
+  margin: -5px 0 0;
+  color: #45474b;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.cycle-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.cycle-actions .button-secondary {
+  flex: 1;
+}
+
+.print-step[hidden],
+.cycle-actions[hidden] { display: none !important; }
+
 .checkbox-field {
   display: flex;
   align-items: center;
@@ -233,6 +252,7 @@ button:focus-visible { outline: 2px solid #202124; outline-offset: 2px; }
   main { margin: 16px auto; }
   form { padding: 18px; }
   .product-fields { grid-template-columns: 1fr; }
+  .cycle-actions { flex-direction: column; }
 }
 
 @media print {

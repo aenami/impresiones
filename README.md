@@ -6,16 +6,20 @@ Aplicación local para preparar e imprimir el recibo mostrado en la referencia.
 
 Hacé doble clic en `iniciar.bat`. No requiere instalación ni conexión a internet.
 
-## Preparar una impresión
+## Preparar un pedido
 
-1. Elegí **Factura** o **Comanda** en el campo Formato.
+1. Elegí **Comanda y factura** en el campo Impresión. También podés elegir un solo formato.
 2. Escribí la nota.
 3. Elegí el cajero que atendió.
 4. Cambiá el código, la descripción, la cantidad y el valor unitario del producto.
 5. Usá **Agregar producto** para incluir más filas y **Eliminar** para retirar una.
-6. Si querés preparar una nueva orden después de imprimir, marcá **Limpiar después de imprimir**.
-7. Pulsá **Imprimir**.
-8. En la ventana de impresión seleccioná la impresora térmica, papel de **80 mm**, escala **100 %**, márgenes **ninguno** y desactivá encabezados y pies de página del navegador.
+6. Marcá **Limpiar después del ciclo** y **Pantalla negra después del ciclo** según prefieras.
+7. Pulsá **Imprimir comanda (1/2)** y elegí la impresora de comandas en el diálogo.
+8. Al cerrar ese diálogo, pulsá **Imprimir factura (2/2)** y elegí la impresora de facturas.
+
+El formulario conserva los mismos datos para las dos impresiones. Entre ambas queda bloqueado y el botón de factura recibe el foco, así que podés pulsar `Enter` para abrir enseguida el segundo diálogo. Si cerraste el primero sin imprimir, usá **Repetir comanda**; **Cancelar ciclo** permite volver a editar sin limpiar el pedido. La limpieza y la pantalla negra se aplican al cerrar el segundo diálogo. En cada impresora configurá papel de **80 mm**, escala **100 %**, márgenes **ninguno** y desactivá encabezados y pies de página del navegador.
+
+El navegador no informa si el diálogo terminó con impresión o cancelación. Si cancelás el de la factura, las opciones de finalización también se ejecutarán.
 
 La factura incluye el total y la forma de pago. La comanda cambia la franja de productos por **COMANDA** y omite el total, el efectivo y el cambio.
 
@@ -25,7 +29,7 @@ Podés recorrer los controles con las cuatro flechas. Dentro de los campos de te
 
 Al escribir un nombre completo del catálogo, el código y el precio se completan automáticamente. El catálogo inicial incluye EJECUTIVO, CAFÉ ALCAZAR, ALMOJABANAS, TINTO y PINTADO.
 
-La aplicación inicia con la ventana completamente negra. Para mostrar el formulario, hacé clic en la esquina inferior izquierda. La opción **Pantalla negra después de imprimir** permite volver automáticamente a ese estado al cerrar la impresión. El botón **Pantalla negra** también permite ocultarlo manualmente.
+La aplicación inicia con la ventana completamente negra. Para mostrar el formulario, hacé clic en la esquina inferior izquierda. La opción **Pantalla negra después del ciclo** permite volver automáticamente a ese estado al terminar las impresiones. El botón **Pantalla negra** también permite ocultarlo manualmente.
 
 ## Ajustar para otra impresora
 

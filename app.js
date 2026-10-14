@@ -7,7 +7,7 @@ const PRODUCT_CATALOG = [
 ];
 
 const EXAMPLE = {
-  printType: "invoice",
+  printMode: "both",
   note: "SOPA, PAPA, CERDO, LLEVAR",
   cashier: "Yeison Jimenez",
   resetAfterPrint: false,
@@ -23,7 +23,10 @@ const EXAMPLE = {
 };
 
 const form = document.querySelector("#receipt-form");
-const printTypeField = document.querySelector("#print-type");
+const printModeField = document.querySelector("#print-mode");
+const printButton = document.querySelector("#print-button");
+const printStep = document.querySelector("#print-step");
+const cycleActions = document.querySelector("#cycle-actions");
 const noteField = document.querySelector("#note");
 const cashierField = document.querySelector("#cashier");
 const productsList = document.querySelector("#products-list");
@@ -31,8 +34,10 @@ const productTemplate = document.querySelector("#product-template");
 const blackoutToggle = document.querySelector("#blackout-toggle");
 const resetAfterPrintField = document.querySelector("#reset-after-print");
 const blackoutAfterPrintField = document.querySelector("#blackout-after-print");
-let resetAfterPrintPending = false;
-let blackoutAfterPrintPending = false;
+let activePrintFormat = null;
+let pendingPrint = null;
+let awaitingInvoice = false;
+let cyclePreferences = null;
 
 const output = {
   receipt: document.querySelector("#receipt"),
@@ -152,7 +157,8 @@ function createReceiptProduct(product) {
 function render() {
   const data = readForm();
   const cash = nextCashAmount(data.total);
-  const isCommand = printTypeField.value === "command";
+  const format = activePrintFormat ?? (printModeField.value === "invoice" ? "invoice" : "command");
+  const isCommand = format === "command";
 
   output.receipt.classList.toggle("receipt--command", isCommand);
   output.sectionTitle.textContent = isCommand ? "COMANDA" : "PRODUCTOS";
@@ -165,7 +171,7 @@ function render() {
   output.message.textContent = "";
 
   localStorage.setItem("grano-plancha-receipt", JSON.stringify({
-    printType: printTypeField.value,
+    printMode: printModeField.value,
     note: noteField.value,
     cashier: cashierField.value,
     resetAfterPrint: resetAfterPrintField.checked,
@@ -234,7 +240,9 @@ function migrateSavedProducts(values) {
 }
 
 function loadValues(values) {
-  printTypeField.value = values?.printType === "command" ? "command" : EXAMPLE.printType;
+  printModeField.value = ["both", "command", "invoice"].includes(values?.printMode)
+    ? values.printMode
+    : EXAMPLE.printMode;
   noteField.value = values?.note ?? EXAMPLE.note;
   cashierField.value = values?.cashier === "Julian Andres" ? "Julian Andres" : EXAMPLE.cashier;
   resetAfterPrintField.checked = Boolean(values?.resetAfterPrint);
@@ -244,6 +252,7 @@ function loadValues(values) {
   productsList.replaceChildren();
   migrateSavedProducts(values).forEach(addProduct);
   render();
+  updatePrintControls();
 }
 
 function resetOrderForm() {
@@ -252,6 +261,54 @@ function resetOrderForm() {
   const item = addProduct({ quantity: 1 });
   render();
   item.querySelector('[data-field="description"]').focus();
+}
+
+function setOrderEditingLocked(locked) {
+  form.querySelectorAll("input, textarea, select, button").forEach((control) => {
+    if (control === printButton || control.closest("#cycle-actions")) return;
+    control.disabled = locked;
+  });
+  if (!locked) renumberProducts();
+}
+
+function updatePrintControls() {
+  if (awaitingInvoice) {
+    printButton.textContent = "Imprimir factura (2/2)";
+    printStep.textContent = "Comanda: diálogo cerrado. Elegí la impresora de factura y continuá.";
+    printStep.hidden = false;
+    cycleActions.hidden = false;
+    return;
+  }
+
+  printButton.textContent = {
+    both: "Imprimir comanda (1/2)",
+    command: "Imprimir comanda",
+    invoice: "Imprimir factura",
+  }[printModeField.value];
+  printStep.hidden = true;
+  cycleActions.hidden = true;
+}
+
+function startPrint(format, inCycle) {
+  if (pendingPrint) return;
+  pendingPrint = { format, inCycle };
+  activePrintFormat = format;
+  render();
+  updateDateTime();
+  window.print();
+}
+
+function endPrintCycle() {
+  const preferences = cyclePreferences;
+  cyclePreferences = null;
+  awaitingInvoice = false;
+  activePrintFormat = null;
+  setOrderEditingLocked(false);
+  updatePrintControls();
+
+  if (preferences?.reset) resetOrderForm();
+  else render();
+  if (preferences?.blackout) setBlackout(true);
 }
 
 function navigationControls() {
@@ -281,6 +338,7 @@ form.addEventListener("input", (event) => {
     fillProductFromCatalog(event.target);
   }
   render();
+  if (event.target === printModeField) updatePrintControls();
 });
 
 form.addEventListener("keydown", (event) => {
@@ -332,25 +390,58 @@ blackoutToggle.addEventListener("click", () => {
   setBlackout(!document.body.classList.contains("blackout"));
 });
 
-document.querySelector("#print-button").addEventListener("click", () => {
+printButton.addEventListener("click", () => {
+  if (pendingPrint) return;
+  if (awaitingInvoice) {
+    startPrint("invoice", true);
+    return;
+  }
+
   if (!form.reportValidity()) {
     output.message.textContent = "Completá los datos de todos los productos antes de imprimir.";
     return;
   }
-  resetAfterPrintPending = resetAfterPrintField.checked;
-  blackoutAfterPrintPending = blackoutAfterPrintField.checked;
-  updateDateTime();
-  window.print();
+
+  cyclePreferences = {
+    reset: resetAfterPrintField.checked,
+    blackout: blackoutAfterPrintField.checked,
+  };
+  const inCycle = printModeField.value === "both";
+  startPrint(inCycle ? "command" : printModeField.value, inCycle);
+});
+
+document.querySelector("#repeat-command").addEventListener("click", () => {
+  if (awaitingInvoice) startPrint("command", true);
+});
+
+document.querySelector("#cancel-cycle").addEventListener("click", () => {
+  if (!awaitingInvoice || pendingPrint) return;
+  cyclePreferences = null;
+  awaitingInvoice = false;
+  activePrintFormat = null;
+  setOrderEditingLocked(false);
+  render();
+  updatePrintControls();
+  printButton.focus();
 });
 
 window.addEventListener("beforeprint", updateDateTime);
 window.addEventListener("afterprint", () => {
-  const shouldReset = resetAfterPrintPending;
-  const shouldBlackout = blackoutAfterPrintPending;
-  resetAfterPrintPending = false;
-  blackoutAfterPrintPending = false;
-  if (shouldReset) resetOrderForm();
-  if (shouldBlackout) setBlackout(true);
+  const completedPrint = pendingPrint;
+  if (!completedPrint) return;
+  pendingPrint = null;
+
+  if (completedPrint.inCycle && completedPrint.format === "command") {
+    awaitingInvoice = true;
+    activePrintFormat = "invoice";
+    setOrderEditingLocked(true);
+    render();
+    updatePrintControls();
+    printButton.focus();
+    return;
+  }
+
+  endPrintCycle();
 });
 setInterval(updateDateTime, 1000);
 updateDateTime();

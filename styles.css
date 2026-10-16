@@ -300,6 +300,7 @@ button:focus-visible { outline: 2px solid #202124; outline-offset: 2px; }
     font-size: 20px;
     font-weight: 900;
     line-height: 1.1;
+    -webkit-text-stroke: .26px #000;
   }
   .receipt__date { display: flex; justify-content: space-between; gap: 10px; white-space: nowrap; }
   .receipt__note { margin-top: 3px !important; overflow-wrap: anywhere; }
@@ -345,5 +346,27 @@ button:focus-visible { outline: 2px solid #202124; outline-offset: 2px; }
   .receipt--command > p,
   .receipt--command .product-row span,
   .receipt--command .receipt__footer p { -webkit-text-stroke: .15px #000; }
+  .receipt--command .receipt__order > strong,
+  .receipt--command .receipt__order > span { -webkit-text-stroke: .23px #000; }
+  .receipt--command .receipt__date {
+    justify-content: center;
+    gap: 9px;
+    font-size: 12px;
+    -webkit-text-stroke: .22px #000;
+  }
+  .receipt--command .receipt__identity-label { -webkit-text-stroke: .25px #000; }
+  .receipt--command .receipt__identity-value { font-size: 11px; }
+  .receipt--command .receipt__customer {
+    font-size: 12px;
+    -webkit-text-stroke: .24px #000;
+  }
+  .receipt--command .product-head {
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: none;
+    -webkit-text-stroke: .09px #000;
+  }
+  .command-only { display: none; }
+  .receipt--command .command-only { display: inline; }
   .receipt--command .invoice-only { display: none !important; }
 }

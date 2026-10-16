@@ -22,7 +22,7 @@ El formulario conserva los mismos datos para las dos impresiones. Entre ambas qu
 
 El navegador no informa si el diálogo terminó con impresión o cancelación. Por eso, confirmá cada impresión antes de avanzar.
 
-La factura incluye el total, la forma de pago y el aviso de devoluciones. La comanda muestra **COMANDA** sobre el número de pedido y **PRODUCTOS** sobre el listado; omite el total, el efectivo, el cambio y el aviso de devoluciones.
+La factura incluye el total, la forma de pago, el aviso de devoluciones y el texto del proveedor al pie. La comanda muestra **COMANDA** sobre el número de pedido y **PRODUCTOS** sobre el listado; omite el total, el efectivo, el cambio, el aviso de devoluciones y el texto del proveedor.
 
 La fecha y la hora se toman automáticamente del computador. El total de todos los productos, el efectivo y el cambio se calculan automáticamente. Los últimos datos escritos quedan guardados en ese navegador.
 

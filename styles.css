@@ -286,6 +286,9 @@ button:focus-visible { outline: 2px solid #202124; outline-offset: 2px; }
     -webkit-print-color-adjust: exact;
   }
 
+  .receipt:not(.receipt--command) { -webkit-text-stroke: .15px #000; }
+  .receipt:not(.receipt--command) .receipt__business h2 { -webkit-text-stroke: .08px #000; }
+
   .receipt p { margin: 1px 0; }
   .receipt__business { text-align: center; }
   .receipt__business h2 { margin: 0 0 1px; font-size: 16px; font-weight: 900; }
@@ -303,6 +306,7 @@ button:focus-visible { outline: 2px solid #202124; outline-offset: 2px; }
     -webkit-text-stroke: .26px #000;
   }
   .receipt__date { display: flex; justify-content: space-between; gap: 10px; white-space: nowrap; }
+  .receipt:not(.receipt--command) .receipt__date { justify-content: center; gap: 9px; }
   .receipt__note { margin-top: 3px !important; overflow-wrap: anywhere; }
 
   .section-title,
@@ -316,6 +320,8 @@ button:focus-visible { outline: 2px solid #202124; outline-offset: 2px; }
     letter-spacing: .03em;
     -webkit-text-stroke: 0;
   }
+  .receipt:not(.receipt--command) .section-title,
+  .receipt:not(.receipt--command) .total-bar { -webkit-text-stroke: .08px #fff; }
 
   .product-table { min-height: 0; }
   .product-head,

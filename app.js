@@ -11,16 +11,16 @@ const PRODUCT_CATALOG = [
 
 const EXAMPLE = {
   printMode: "both",
-  note: "SOPA, PAPA, CERDO, LLEVAR",
+  note: "",
   cashier: "Yeison Jimenez",
   resetAfterPrint: false,
   blackoutAfterPrint: true,
   products: [
     {
-      code: "78",
-      description: "EJECUTIVO",
-      quantity: 1,
-      unitPrice: 12000,
+      code: "",
+      description: "",
+      quantity: "",
+      unitPrice: "",
     },
   ],
 };
@@ -56,7 +56,10 @@ const output = {
   time: document.querySelector("#receipt-time"),
   footerDatetime: document.querySelector("#footer-datetime"),
   cashier: document.querySelector("#receipt-cashier"),
-  screenDateTime: document.querySelector("#screen-datetime"),
+  screenDate: document.querySelector("#screen-date"),
+  screenHour: document.querySelector("#screen-hour"),
+  screenInternalDate: document.querySelector("#screen-internal-date"),
+  screenInternalHour: document.querySelector("#screen-internal-hour"),
   screenGross: document.querySelector("#screen-gross"),
   screenTotal: document.querySelector("#screen-total"),
   screenItems: document.querySelector("#screen-items"),
@@ -65,6 +68,10 @@ const output = {
 };
 
 const money = new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 });
+const screenMoney = new Intl.NumberFormat("es-CO", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 const quantityFormat = new Intl.NumberFormat("es-CO", { maximumFractionDigits: 2 });
 
 function normalizeText(value) {
@@ -107,14 +114,16 @@ function nextCashAmount(total) {
 function productValues(item, normalized = true) {
   const code = item.querySelector('[data-field="code"]').value;
   const description = item.querySelector('[data-field="description"]').value;
-  const quantity = Number(item.querySelector('[data-field="quantity"]').value) || 0;
-  const unitPrice = Number(item.querySelector('[data-field="unitPrice"]').value) || 0;
+  const quantityFieldValue = item.querySelector('[data-field="quantity"]').value;
+  const unitPriceFieldValue = item.querySelector('[data-field="unitPrice"]').value;
+  const quantity = Number(quantityFieldValue) || 0;
+  const unitPrice = Number(unitPriceFieldValue) || 0;
 
   return {
     code: normalized ? normalizeText(code) : code,
     description: normalized ? normalizeText(description) : description,
-    quantity,
-    unitPrice,
+    quantity: normalized ? quantity : quantityFieldValue,
+    unitPrice: normalized ? unitPrice : unitPriceFieldValue,
     total: quantity * unitPrice,
   };
 }
@@ -140,7 +149,15 @@ function updateDateTime() {
   output.date.textContent = date;
   output.time.textContent = time;
   output.footerDatetime.textContent = `${date}  ${time}`;
-  output.screenDateTime.textContent = `${date} · ${time}`;
+  const screenTime = new Intl.DateTimeFormat("es-CO", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  }).format(now);
+  output.screenDate.textContent = date;
+  output.screenHour.textContent = screenTime;
+  output.screenInternalDate.textContent = date;
+  output.screenInternalHour.textContent = screenTime;
 }
 
 function createReceiptProduct(product) {
@@ -180,14 +197,17 @@ function render() {
   output.cash.textContent = money.format(cash);
   output.change.textContent = money.format(Math.max(0, cash - data.total));
   [...productsList.querySelectorAll(".product-item")].forEach((item, index) => {
-    const value = money.format(data.products[index].total);
+    const filled = Boolean(data.products[index].code || data.products[index].description);
+    const value = filled ? screenMoney.format(data.products[index].total) : "";
+    item.querySelector('[data-output="units"]').textContent = filled ? "UND" : "";
     item.querySelector('[data-output="gross"]').textContent = value;
     item.querySelector('[data-output="total"]').textContent = value;
   });
-  output.screenGross.textContent = `$ ${money.format(data.total)}`;
-  output.screenTotal.textContent = `$ ${money.format(data.total)}`;
-  output.screenItems.textContent = String(data.products.length);
-  output.itemCount.textContent = `${data.products.length} ${data.products.length === 1 ? "producto" : "productos"}`;
+  const filledCount = data.products.filter((product) => product.code || product.description).length;
+  output.screenGross.textContent = `$ ${screenMoney.format(data.total)}`;
+  output.screenTotal.textContent = `$ ${screenMoney.format(data.total)}`;
+  output.screenItems.textContent = String(filledCount);
+  output.itemCount.textContent = String(filledCount);
   output.message.textContent = "";
 
   localStorage.setItem("grano-plancha-receipt", JSON.stringify({
@@ -228,7 +248,7 @@ function addProduct(product = {}) {
 
   item.querySelector('[data-field="code"]').value = product.code ?? "";
   item.querySelector('[data-field="description"]').value = product.description ?? "";
-  item.querySelector('[data-field="quantity"]').value = product.quantity ?? 1;
+  item.querySelector('[data-field="quantity"]').value = product.quantity ?? "";
   item.querySelector('[data-field="unitPrice"]').value = product.unitPrice ?? "";
 
   productsList.append(fragment);
@@ -278,7 +298,7 @@ function loadValues(values) {
 function resetOrderForm() {
   noteField.value = "";
   productsList.replaceChildren();
-  const item = addProduct({ quantity: 1 });
+  const item = addProduct({ quantity: "" });
   render();
   item.querySelector('[data-field="description"]').focus();
 }
@@ -295,7 +315,8 @@ function updatePrintControls() {
   if (printReview) {
     const isCommand = printReview.format === "command";
     const name = isCommand ? "comanda" : "factura";
-    printButton.textContent = isCommand && printReview.inCycle
+    printButton.textContent = isCommand && printReview.inCycle ? "Factura" : "Finalizar";
+    printButton.title = isCommand && printReview.inCycle
       ? "Confirmar comanda e imprimir factura (2/2)"
       : `Confirmar ${name} impresa`;
     const nextStep = isCommand && printReview.inCycle
@@ -308,10 +329,11 @@ function updatePrintControls() {
     return;
   }
 
-  printButton.textContent = {
-    both: "Imprimir comanda (1/2)",
-    command: "Imprimir comanda",
-    invoice: "Imprimir factura",
+  printButton.textContent = "Guardar";
+  printButton.title = {
+    both: "F2: imprimir comanda y factura",
+    command: "F2: imprimir comanda",
+    invoice: "F2: imprimir factura",
   }[printModeField.value];
   printStep.hidden = true;
   cycleActions.hidden = true;
@@ -400,6 +422,15 @@ form.addEventListener("input", (event) => {
   if (event.target.matches('[data-field="description"]')) {
     fillProductFromCatalog(event.target);
   }
+  if (event.target.matches("[data-field]") &&
+      ["code", "description"].includes(event.target.dataset.field)) {
+    const item = event.target.closest(".product-item");
+    const quantity = item.querySelector('[data-field="quantity"]');
+    if (!quantity.value && (
+      item.querySelector('[data-field="code"]').value ||
+      item.querySelector('[data-field="description"]').value
+    )) quantity.value = 1;
+  }
   render();
   if (event.target === printModeField) updatePrintControls();
 });
@@ -451,10 +482,11 @@ productsList.addEventListener("click", (event) => {
 });
 
 window.addEventListener("keydown", (event) => {
-  if (event.key !== "F2" || event.altKey || event.ctrlKey || event.metaKey) return;
+  if (!["F2", "Insert"].includes(event.key) || event.altKey || event.ctrlKey || event.metaKey) return;
   event.preventDefault();
   if (document.body.classList.contains("blackout") || pendingPrint || printReview) return;
-  printButton.click();
+  if (event.key === "F2") printButton.click();
+  else document.querySelector("#add-product").click();
 });
 
 function setBlackout(isBlackout) {
@@ -464,6 +496,9 @@ function setBlackout(isBlackout) {
     "aria-label",
     isBlackout ? "Restaurar página" : "Activar pantalla negra",
   );
+  if (!isBlackout && !pendingPrint && !printReview) {
+    productsList.querySelector(".product-item")?.querySelector('[data-field="code"]')?.focus();
+  }
 }
 
 blackoutToggle.addEventListener("click", () => {

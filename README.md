@@ -6,16 +6,18 @@ Aplicación local para preparar e imprimir el recibo mostrado en la referencia.
 
 Hacé doble clic en `iniciar.bat`. No requiere instalación ni conexión a internet.
 
+Para abrirlo casi a pantalla completa en el computador, abrí la dirección publicada en Microsoft Edge, elegí **Instalar esta aplicación** en el menú del navegador y maximizá la ventana de Ventas. Así se ocultan las pestañas y la barra de direcciones mientras queda visible la barra de tareas de Windows. Este modo requiere instalarla una sola vez en ese computador. La aplicación abre inicialmente con la pantalla negra; hacé clic en la esquina inferior izquierda para mostrar la interfaz.
+
 ## Preparar un pedido
 
-1. Elegí **Comanda y factura** en el campo Impresión. También podés elegir un solo formato.
+1. Elegí **POS Documento Equivalente POS** en Tipo Documento para el ciclo de comanda y factura. También podés elegir un solo formato.
 2. Escribí las observaciones y elegí el cajero que atendió en la parte superior.
 3. En la tabla, cambiá el código, la descripción, la cantidad y el precio del producto. El total de cada fila y el total del documento se calculan automáticamente.
-4. Usá **Agregar producto** para incluir más filas y **Quitar** para retirarlas.
-5. Marcá **Limpiar después del ciclo** y **Pantalla negra después del ciclo** según prefieras.
-6. Pulsá **F2** o **Imprimir comanda (1/2)** y elegí la impresora de comandas en el diálogo.
-7. Si la comanda salió, pulsá **Confirmar comanda e imprimir factura (2/2)** y elegí la impresora de facturas. Si cancelaste el diálogo, pulsá **Reimprimir comanda**.
-8. Cuando salga la factura, pulsá **Confirmar factura impresa** para terminar. Si cancelaste su diálogo, pulsá **Reimprimir factura**.
+4. Usá **Utilidades** o `Insert` para incluir más filas y **Quitar** para retirarlas.
+5. Abrí **Opciones** y marcá **Limpiar después del ciclo** y **Pantalla negra después del ciclo** según prefieras.
+6. Pulsá **F2** o **Guardar** y elegí la impresora de comandas en el diálogo.
+7. Si la comanda salió, pulsá **Factura** y elegí la impresora de facturas. Si cancelaste el diálogo, pulsá **Reimprimir comanda**.
+8. Cuando salga la factura, pulsá **Finalizar** para terminar. Si cancelaste su diálogo, pulsá **Reimprimir factura**.
 
 El formulario conserva los mismos datos para las dos impresiones. Entre ambas queda bloqueado y el botón de confirmación recibe el foco, así que podés pulsar `Enter` para abrir enseguida el segundo diálogo. **Cancelar ciclo** permite volver a editar sin limpiar el pedido. La limpieza y la pantalla negra se aplican solo al confirmar que salió la factura. En cada impresora configurá papel de **80 mm**, escala **100 %**, márgenes **ninguno** y desactivá encabezados y pies de página del navegador.
 

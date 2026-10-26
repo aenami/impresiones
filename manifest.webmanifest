@@ -1,6 +1,6 @@
 {
-  "name": "Ventas - Sucursal: 1. Principal",
-  "short_name": "Ventas",
+  "name": "prueba-interfaz",
+  "short_name": "prueba-interfaz",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

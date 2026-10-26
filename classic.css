@@ -25,7 +25,6 @@ form {
   color: #212833;
   font: 12px Tahoma, Arial, sans-serif;
 }
-.app-mark { width: 16px; height: 16px; border: 3px solid #133f9a; border-radius: 50%; background: #8098d1; }
 .blackout-toggle { top: 2px; right: 8px; bottom: auto; height: 18px; min-height: 18px; padding: 0 4px; border: 1px solid #8e98a8; border-radius: 0; background: #d5d7dc; color: #495362; font-size: 9px; }
 body.blackout .blackout-toggle { top: auto; right: auto; bottom: 0; left: 0; }
 

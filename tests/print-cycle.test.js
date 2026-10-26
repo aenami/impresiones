@@ -24,8 +24,10 @@ function element(value = "") {
       },
     },
     addEventListener(name, handler) { this.listeners[name] = handler; },
+    click() { this.listeners.click?.(); },
     setAttribute(name, value) { this.attributes[name] = value; },
     focus() { this.focused = true; },
+    select() { this.selected = true; },
     matches() { return false; },
     closest(selector) { return selector === "#cycle-actions" && this.inCycleActions ? {} : null; },
     append(...children) { this.children.push(...children); },
@@ -45,9 +47,11 @@ function productItem() {
   const labels = Object.fromEntries(Object.keys(fields).map((name) => [name, element()]));
   const label = element();
   const remove = element();
-  return {
+  const outputs = { gross: element(), total: element() };
+  const item = {
     fields,
-    remove,
+    removeButton: remove,
+    outputs,
     querySelector(selector) {
       if (selector === ".product-item__label") return label;
       if (selector === ".remove-product") return remove;
@@ -55,6 +59,8 @@ function productItem() {
       if (field) return fields[field[1]];
       const fieldLabel = selector.match(/^\[data-label="(.+)"\]$/);
       if (fieldLabel) return labels[fieldLabel[1]];
+      const output = selector.match(/^\[data-output="(.+)"\]$/);
+      if (output) return outputs[output[1]];
       throw new Error(`Unexpected product selector: ${selector}`);
     },
     querySelectorAll(selector) {
@@ -62,6 +68,15 @@ function productItem() {
       throw new Error(`Unexpected product selector: ${selector}`);
     },
   };
+  Object.values(fields).forEach((field) => {
+    field.matches = (selector) => selector === "[data-field]"
+      || (selector === '[data-field="description"]' && field === fields.description)
+      || (selector === 'input[type="text"], textarea' && [fields.code, fields.description].includes(field));
+    field.closest = (selector) => selector === ".product-item" ? item : null;
+  });
+  remove.closest = (selector) => selector === "[data-remove-product]" ? remove
+    : selector === ".product-item" ? item : null;
+  return item;
 }
 
 function startApp() {
@@ -71,7 +86,8 @@ function startApp() {
     "blackout-after-print", "receipt", "receipt-note", "receipt-section-title",
     "receipt-products", "receipt-total", "receipt-cash", "receipt-change",
     "receipt-date", "receipt-time", "footer-datetime", "receipt-cashier", "form-message",
-    "add-product", "repeat-print", "cancel-cycle",
+    "add-product", "repeat-print", "cancel-cycle", "screen-datetime", "screen-gross",
+    "screen-total", "screen-items", "item-count",
   ];
   const nodes = Object.fromEntries(ids.map((id) => [id, element()]));
   nodes["print-step"].hidden = true;
@@ -92,13 +108,14 @@ function startApp() {
   nodes["product-template"] = {
     content: { cloneNode: () => {
       const item = productItem();
+      item.remove = () => { items.splice(items.indexOf(item), 1); };
       return { item, querySelector: () => item };
     } },
   };
 
   nodes["receipt-form"].querySelectorAll = () => [
     nodes["print-mode"], nodes.note, nodes.cashier,
-    ...items.flatMap((item) => [...Object.values(item.fields), item.remove]),
+    ...items.flatMap((item) => [...Object.values(item.fields), item.removeButton]),
     nodes["add-product"], nodes["reset-after-print"], nodes["blackout-after-print"],
     nodes["print-button"], nodes["repeat-print"], nodes["cancel-cycle"],
   ];
@@ -240,4 +257,37 @@ test("los nuevos productos completan código y precio", () => {
     assert.equal(app.items[0].fields.code.value, code);
     assert.equal(app.items[0].fields.unitPrice.value, price);
   }
+});
+
+test("F2 abre la impresión inicial solo con la pantalla visible", () => {
+  const app = startApp();
+  const key = () => app.window.listeners.keydown({ key: "F2", preventDefault() {} });
+  key();
+  assert.equal(app.window.printCalls, 0);
+  app.click("blackout-toggle");
+  key();
+  assert.equal(app.window.printCalls, 1);
+  app.closePrintDialog();
+  key();
+  assert.equal(app.window.printCalls, 1);
+  assert.equal(app.nodes["print-button"].textContent, "Confirmar comanda e imprimir factura (2/2)");
+});
+
+test("la tabla agrega y quita filas y navega por columna con flechas", () => {
+  const app = startApp();
+  app.click("add-product");
+  assert.equal(app.items.length, 2);
+  assert.equal(app.nodes["screen-items"].textContent, "2");
+  const key = (target, name) => app.nodes["receipt-form"].listeners.keydown({
+    target, key: name, preventDefault() {},
+  });
+  key(app.items[0].fields.code, "ArrowDown");
+  assert.equal(app.items[1].fields.code.focused, true);
+  app.items[1].fields.code.selectionStart = 0;
+  app.items[1].fields.code.selectionEnd = 0;
+  key(app.items[1].fields.code, "ArrowLeft");
+  assert.equal(app.items[0].fields.unitPrice.focused, true);
+  app.nodes["products-list"].listeners.click({ target: app.items[1].removeButton });
+  assert.equal(app.items.length, 1);
+  assert.equal(app.nodes["screen-items"].textContent, "1");
 });

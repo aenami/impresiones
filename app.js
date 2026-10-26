@@ -38,6 +38,7 @@ const productTemplate = document.querySelector("#product-template");
 const blackoutToggle = document.querySelector("#blackout-toggle");
 const resetAfterPrintField = document.querySelector("#reset-after-print");
 const blackoutAfterPrintField = document.querySelector("#blackout-after-print");
+const gridFields = ["code", "description", "quantity", "unitPrice"];
 let activePrintFormat = null;
 let pendingPrint = null;
 let printReview = null;
@@ -55,6 +56,11 @@ const output = {
   time: document.querySelector("#receipt-time"),
   footerDatetime: document.querySelector("#footer-datetime"),
   cashier: document.querySelector("#receipt-cashier"),
+  screenDateTime: document.querySelector("#screen-datetime"),
+  screenGross: document.querySelector("#screen-gross"),
+  screenTotal: document.querySelector("#screen-total"),
+  screenItems: document.querySelector("#screen-items"),
+  itemCount: document.querySelector("#item-count"),
   message: document.querySelector("#form-message"),
 };
 
@@ -134,6 +140,7 @@ function updateDateTime() {
   output.date.textContent = date;
   output.time.textContent = time;
   output.footerDatetime.textContent = `${date}  ${time}`;
+  output.screenDateTime.textContent = `${date} · ${time}`;
 }
 
 function createReceiptProduct(product) {
@@ -172,6 +179,15 @@ function render() {
   output.total.textContent = money.format(data.total);
   output.cash.textContent = money.format(cash);
   output.change.textContent = money.format(Math.max(0, cash - data.total));
+  [...productsList.querySelectorAll(".product-item")].forEach((item, index) => {
+    const value = money.format(data.products[index].total);
+    item.querySelector('[data-output="gross"]').textContent = value;
+    item.querySelector('[data-output="total"]').textContent = value;
+  });
+  output.screenGross.textContent = `$ ${money.format(data.total)}`;
+  output.screenTotal.textContent = `$ ${money.format(data.total)}`;
+  output.screenItems.textContent = String(data.products.length);
+  output.itemCount.textContent = `${data.products.length} ${data.products.length === 1 ? "producto" : "productos"}`;
   output.message.textContent = "";
 
   localStorage.setItem("grano-plancha-receipt", JSON.stringify({
@@ -193,7 +209,7 @@ function renumberProducts() {
   const items = [...productsList.querySelectorAll(".product-item")];
 
   items.forEach((item, index) => {
-    item.querySelector(".product-item__label").textContent = `Producto ${index + 1}`;
+    item.querySelector(".product-item__label").textContent = String(index + 1);
     item.querySelector(".remove-product").disabled = items.length === 1;
 
     item.querySelectorAll("[data-field]").forEach((field) => {
@@ -329,6 +345,40 @@ function navigationControls() {
     .filter((element) => !element.disabled && element.offsetParent !== null);
 }
 
+function navigateProductGrid(event) {
+  const field = event.target;
+  const currentRow = field.closest(".product-item");
+  if (!currentRow) return;
+
+  const rows = [...productsList.querySelectorAll(".product-item")];
+  const rowIndex = rows.indexOf(currentRow);
+  const columnIndex = gridFields.indexOf(field.dataset.field);
+  if (rowIndex < 0 || columnIndex < 0) return;
+
+  const horizontal = event.key === "ArrowLeft" || event.key === "ArrowRight";
+  const direction = event.key === "ArrowUp" || event.key === "ArrowLeft" ? -1 : 1;
+  if (horizontal && !canLeaveTextField(field, direction)) return;
+
+  let nextRow = rowIndex;
+  let nextColumn = columnIndex;
+  if (horizontal) {
+    nextColumn += direction;
+    if (nextColumn < 0 || nextColumn >= gridFields.length) {
+      nextRow += direction;
+      nextColumn = direction < 0 ? gridFields.length - 1 : 0;
+    }
+  } else {
+    nextRow += direction;
+  }
+
+  event.preventDefault();
+  const target = rows[nextRow]?.querySelector(`[data-field="${gridFields[nextColumn]}"]`);
+  if (target && !target.disabled) {
+    target.focus();
+    target.select?.();
+  }
+}
+
 function canLeaveTextField(element, direction) {
   if (!element.matches('input[type="text"], textarea')) return true;
   if (element.selectionStart !== element.selectionEnd) return false;
@@ -364,6 +414,11 @@ form.addEventListener("keydown", (event) => {
   const direction = directions[event.key];
   if (!direction) return;
 
+  if (event.target.matches("[data-field]")) {
+    navigateProductGrid(event);
+    return;
+  }
+
   const isHorizontal = event.key === "ArrowLeft" || event.key === "ArrowRight";
   if (isHorizontal && !canLeaveTextField(event.target, direction)) return;
 
@@ -385,9 +440,21 @@ document.querySelector("#add-product").addEventListener("click", () => {
 productsList.addEventListener("click", (event) => {
   const removeButton = event.target.closest("[data-remove-product]");
   if (!removeButton || productsList.children.length === 1) return;
-  removeButton.closest(".product-item").remove();
+  const items = [...productsList.querySelectorAll(".product-item")];
+  const item = removeButton.closest(".product-item");
+  const index = items.indexOf(item);
+  item.remove();
   renumberProducts();
   render();
+  const remaining = [...productsList.querySelectorAll(".product-item")];
+  remaining[Math.min(index, remaining.length - 1)].querySelector('[data-field="description"]').focus();
+});
+
+window.addEventListener("keydown", (event) => {
+  if (event.key !== "F2" || event.altKey || event.ctrlKey || event.metaKey) return;
+  event.preventDefault();
+  if (document.body.classList.contains("blackout") || pendingPrint || printReview) return;
+  printButton.click();
 });
 
 function setBlackout(isBlackout) {

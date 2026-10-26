@@ -12,48 +12,45 @@
       <h1 class="sr-only">Preparar impresión</h1>
 
       <form id="receipt-form" novalidate>
-        <div class="field">
-          <label for="print-mode">Impresión</label>
-          <select id="print-mode" name="printMode">
-            <option value="both">Comanda y factura</option>
-            <option value="command">Solo comanda</option>
-            <option value="invoice">Solo factura</option>
-          </select>
-        </div>
+        <div class="app-titlebar"><span class="app-mark" aria-hidden="true"></span>Ventas - Sucursal: 1. Principal</div>
 
-        <div class="field">
-          <label for="note">Nota</label>
-          <textarea id="note" name="note" rows="3" maxlength="110"></textarea>
-        </div>
+        <header class="workspace-header">
+          <div class="entry-panel">
+            <div class="entry-grid">
+              <div class="meta-field meta-field--wide"><span>Tipo documento</span><span class="readout readout--select">POS Documento Equivalente POS</span></div>
+              <div class="meta-field"><span>Documento No.</span><span class="readout">POS 545</span></div>
+              <div class="meta-field"><span>Fecha y hora</span><span id="screen-datetime" class="readout"></span></div>
+              <div class="meta-field meta-field--wide"><span>Tercero</span><span class="readout">CONSUMIDOR FINAL</span></div>
+              <label class="meta-field" for="print-mode"><span>Impresión</span><select id="print-mode" name="printMode"><option value="both">Comanda y factura</option><option value="command">Solo comanda</option><option value="invoice">Solo factura</option></select></label>
+              <label class="meta-field" for="cashier"><span>Cajero</span><select id="cashier" name="cashier"><option value="Yeison Jimenez">Yeison Jimenez</option><option value="Julian Andres">Julian Andres</option></select></label>
+              <label class="meta-field meta-field--note" for="note"><span>Observaciones</span><textarea id="note" name="note" rows="2" maxlength="110"></textarea></label>
+            </div>
+          </div>
+          <aside class="brand-panel">
+            <strong>Inventario<br />Delta Evolution</strong>
+            <span>3168748603</span>
+            <span>3164332552</span>
+            <span>Delta-Ingenieria.net</span>
+          </aside>
+        </header>
 
-        <div class="field">
-          <label for="cashier">Cajero</label>
-          <select id="cashier" name="cashier">
-            <option value="Yeison Jimenez">Yeison Jimenez</option>
-            <option value="Julian Andres">Julian Andres</option>
-          </select>
-        </div>
+        <section class="order-workspace" aria-label="Productos del pedido">
+          <div class="grid-toolbar"><span><strong>Productos del pedido</strong> <small id="item-count">1 producto</small></span><button id="add-product" class="button-secondary" type="button">+ Agregar producto</button></div>
+          <div class="grid-scroll">
+            <div class="product-grid product-grid--header" aria-hidden="true"><span></span><span>Código</span><span>Descripción</span><span>Cantidad</span><span>Unidades</span><span>Precio sin IVA</span><span>Total bruto</span><span>Valor total</span><span>Detalle</span></div>
+            <div id="products-list" class="products-list"></div>
+          </div>
+        </section>
 
-        <div id="products-list" class="products-list"></div>
-        <button id="add-product" class="button-secondary" type="button">Agregar producto</button>
-
-        <label class="checkbox-field" for="reset-after-print">
-          <input id="reset-after-print" name="resetAfterPrint" type="checkbox" />
-          <span>Limpiar después del ciclo</span>
-        </label>
-
-        <label class="checkbox-field" for="blackout-after-print">
-          <input id="blackout-after-print" name="blackoutAfterPrint" type="checkbox" />
-          <span>Pantalla negra después del ciclo</span>
-        </label>
-
-        <button id="print-button" type="button">Imprimir comanda (1/2)</button>
-        <p id="print-step" class="print-step" role="status" aria-live="polite" hidden></p>
-        <div id="cycle-actions" class="cycle-actions" hidden>
-          <button id="repeat-print" class="button-secondary" type="button">Reimprimir comanda</button>
-          <button id="cancel-cycle" class="button-secondary" type="button">Cancelar ciclo</button>
-        </div>
-        <p id="form-message" class="form-message" role="alert" aria-live="assertive"></p>
+        <footer class="status-area">
+          <div class="inventory-strip" aria-hidden="true"><span>Referencia</span><span>Existencia</span><span>Stock mín.</span><span>Stock máx.</span><span>U.P.C.</span><span>U.F.C.</span><span>Fecha venc.</span><span>Costo kárdex</span></div>
+          <div class="summary-strip"><span>Total bruto antes de IVA <output id="screen-gross">$ 0</output></span><span>Total descuento <b>$ 0</b></span><span>Total IVA <b>$ 0</b></span><span>Ítems <b id="screen-items">0</b></span><strong class="summary-total">Total documento <output id="screen-total">$ 0</output></strong></div>
+          <div class="action-strip">
+            <div class="cycle-options"><label class="checkbox-field" for="reset-after-print"><input id="reset-after-print" name="resetAfterPrint" type="checkbox" /><span>Limpiar después del ciclo</span></label><label class="checkbox-field" for="blackout-after-print"><input id="blackout-after-print" name="blackoutAfterPrint" type="checkbox" /><span>Pantalla negra después del ciclo</span></label></div>
+            <div class="print-actions"><span class="shortcut-hint">F2 para abrir la impresión</span><button id="print-button" type="button">Imprimir comanda (1/2)</button><p id="print-step" class="print-step" role="status" aria-live="polite" hidden></p><div id="cycle-actions" class="cycle-actions" hidden><button id="repeat-print" class="button-secondary" type="button">Reimprimir comanda</button><button id="cancel-cycle" class="button-secondary" type="button">Cancelar ciclo</button></div></div>
+          </div>
+          <p id="form-message" class="form-message" role="alert" aria-live="assertive"></p>
+        </footer>
       </form>
 
       <article id="receipt" class="receipt" aria-label="Recibo">
@@ -118,38 +115,16 @@
     </button>
 
     <template id="product-template">
-      <section class="product-item">
-        <div class="product-item__header">
-          <span class="product-item__label"></span>
-          <button class="remove-product" type="button" data-remove-product>Eliminar</button>
-        </div>
-
-        <div class="field">
-          <label data-label="description">Descripción</label>
-          <input
-            data-field="description"
-            type="text"
-            maxlength="28"
-            list="product-catalog"
-            autocomplete="off"
-            required
-          />
-        </div>
-
-        <div class="product-fields">
-          <div class="field">
-            <label data-label="code">Código</label>
-            <input data-field="code" type="text" maxlength="10" inputmode="numeric" required />
-          </div>
-          <div class="field">
-            <label data-label="quantity">Cantidad</label>
-            <input data-field="quantity" type="number" min="0.01" max="999" step="0.01" required />
-          </div>
-          <div class="field">
-            <label data-label="unitPrice">Valor unitario</label>
-            <input data-field="unitPrice" type="number" min="0" max="99999999" step="1" required />
-          </div>
-        </div>
+      <section class="product-item product-grid">
+        <span class="product-item__label" aria-hidden="true"></span>
+        <div class="grid-cell"><label class="sr-only" data-label="code">Código</label><input data-field="code" type="text" maxlength="10" inputmode="numeric" required /></div>
+        <div class="grid-cell"><label class="sr-only" data-label="description">Descripción</label><input data-field="description" type="text" maxlength="28" list="product-catalog" autocomplete="off" required /></div>
+        <div class="grid-cell"><label class="sr-only" data-label="quantity">Cantidad</label><input data-field="quantity" type="number" min="0.01" max="999" step="0.01" required /></div>
+        <span class="grid-readout">UND</span>
+        <div class="grid-cell"><label class="sr-only" data-label="unitPrice">Precio sin IVA</label><input data-field="unitPrice" type="number" min="0" max="99999999" step="1" required /></div>
+        <output class="grid-readout" data-output="gross">0</output>
+        <output class="grid-readout" data-output="total">0</output>
+        <button class="remove-product" type="button" data-remove-product>Quitar</button>
       </section>
     </template>
 
